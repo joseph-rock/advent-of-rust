@@ -59,7 +59,7 @@ mod tests {
     use crate::part_1;
 
     #[test]
-    fn test_part_1() {
+    fn day_1_part_1() {
         let input = "1abc2
             pqr3stu8vwx
             a1b2c3d4e5f
@@ -69,7 +69,7 @@ mod tests {
 
     use crate::part_2;
     #[test]
-    fn test_part_2() {
+    fn day_1_part_2() {
         let input = "two1nine
             eightwothree
             abcone2threexyz
