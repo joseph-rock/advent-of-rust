@@ -16,23 +16,26 @@ struct SetCubes {
 fn main() {
     let input: &str = include_str!("./day2.txt");
     let pt1 = part_1(&input);
-    let pt2 = part_2(input);
+    let pt2 = part_2(&input);
     println!("Part 1: {}", pt1);
     println!("Part 2: {}", pt2);
 }
 
 fn part_1(input: &str) -> usize {
-    let games: Vec<Game> = input.lines().map(|line| parse_line(line)).collect();
     let is_possible = |set: &SetCubes| set.red <= 12 && set.green <= 13 && set.blue <= 14;
-    let mut total = 0;
-
-    for game in games {
+    let possible_id = |game: &Game| {
         if game.sets.iter().all(|set| is_possible(set)) {
-            total += game.id;
+            game.id
+        } else {
+            0
         }
-    }
+    };
 
-    total
+    input
+        .lines()
+        .map(|line| parse_line(line))
+        .map(|game| possible_id(&game))
+        .fold(0, |sum, id| sum + id)
 }
 
 fn part_2(input: &str) -> usize {
