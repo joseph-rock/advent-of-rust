@@ -1,3 +1,4 @@
+use once_cell::sync::Lazy;
 use regex::Regex;
 
 #[derive(Debug)]
@@ -5,6 +6,33 @@ struct Card {
     _id: String,
     winning_numbers: Vec<u8>,
     numbers_you_have: Vec<u8>,
+}
+
+impl Card {
+    fn parse(line: &str) -> Card {
+        static RE: Lazy<Regex> = Lazy::new(|| {
+            Regex::new(
+                r"(?x) # multiline regex!
+                (?<id>\w+\s+\d+)
+                (\:\s+)
+                (?<winning_numbers>\d.+)
+                (\s+\|\s+)
+                (?<numbers_you_have>\d.+)",
+            )
+            .unwrap()
+        });
+
+        let groups = RE.captures(line).unwrap();
+        let _id = groups["id"].to_string();
+        let winning_numbers = to_u8_vec(&groups["winning_numbers"].to_string());
+        let numbers_you_have = to_u8_vec(&groups["numbers_you_have"].to_string());
+
+        Card {
+            _id,
+            winning_numbers,
+            numbers_you_have,
+        }
+    }
 }
 
 fn main() {
@@ -16,33 +44,10 @@ fn main() {
 fn part_1(input: &str) -> usize {
     input
         .lines()
-        .map(|line| parse_card(line))
+        .map(|line| Card::parse(line))
         .map(|card| matched_numbers(&card))
         .map(|matched_numbers| score(matched_numbers.len()))
         .fold(0, |sum, score| sum + score)
-}
-
-fn parse_card(line: &str) -> Card {
-    let re = Regex::new(
-        r"(?x) # multiline regex!
-        (?<id>\w+\s+\d+)
-        (\:\s+)
-        (?<winning_numbers>\d.+)
-        (\s+\|\s+)
-        (?<numbers_you_have>\d.+)",
-    )
-    .unwrap();
-
-    let groups = re.captures(line).unwrap();
-    let _id = groups["id"].to_string();
-    let winning_numbers = to_u8_vec(&groups["winning_numbers"].to_string());
-    let numbers_you_have = to_u8_vec(&groups["numbers_you_have"].to_string());
-
-    Card {
-        _id,
-        winning_numbers,
-        numbers_you_have,
-    }
 }
 
 fn to_u8_vec(input: &str) -> Vec<u8> {
